@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 #include <iomanip>
+#include <limits>
 
 struct Transaction {
     std::string date;
@@ -29,7 +30,7 @@ void addTransaction() {
     std::cout << "  Categories:\n";
     for(int i = 0; i < (int)categories.size(); ++i)
         std::cout << "      " << i + 1 << ".     " << categories[i] << "\n";
-    std::cout << "  Select a category (1 - " << categories.size() << "):\n";
+    std::cout << "  Select a category (1 - " << categories.size() << "):";
     int choice;
     std::cin >> choice;
 
@@ -38,12 +39,14 @@ void addTransaction() {
         return;
     }
 
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     t.category = categories[choice - 1];
 
-    std::cout << "  Enter a description: \n";
+    std::cout << "  Enter a description: ";
     std::getline(std::cin, t.description);
 
-    std::cout << "  Enter the amount (negative = income): \n";
+    std::cout << "  Enter the amount (negative = income): ";
     if ( !(std::cin >> t.amount) ) {
         std::cout << "  Invalid amount entered. \n";
         return;
