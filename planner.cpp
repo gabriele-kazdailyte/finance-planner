@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <ctime>
 #include <iomanip>
@@ -78,7 +79,12 @@ void listTransactions() {
 }
 
 void exportReport() {
-
+    std::string filename = "report_" + currentDate() + ".csv";
+    std::ofstream f(filename);
+    f << "date,category,description,amount\n";
+    for (const auto& t : transactions)
+        f << t.date << ',' << t.category << ',' << t.description << ',' << t.amount << '\n';
+    std::cout << "  Report exported to: " << filename << '\n';
 }
 
 void listMenu() {
