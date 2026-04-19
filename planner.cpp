@@ -23,6 +23,33 @@ std::string currentDate() {
     return buf;
 }
 
+void loadTransactions() {
+    std::ifstream f(FILE_TRANSACTIONS);
+    if (!f.is_open()) return;
+    std::string line;
+    std::getline(f, line);
+
+    while (std::getline(f, line)) {
+        std::istringstream ss(line);
+        Transaction t;
+        std::getline(ss, t.date, ',');
+        std::getline(ss, t.category, ',');
+        std::getline(ss, t.description, ',');
+        std::string amt;
+        std::getline(ss, amt);
+        try {
+            t.amount = std::stod(amt); 
+        } catch (...) {
+            continue;
+        }
+        transactions.push_back(t);
+    }
+}
+
+void loadAll() {
+    loadTransactions();
+}
+
 void saveTransactions() {
     std::ofstream f(FILE_TRANSACTIONS);
     f << "date,category,description,amount\n";
@@ -43,7 +70,7 @@ void addTransaction() {
 
     std::vector<std::string> categories = {"food", "transport", "rent", "income", "personal expenses", "loan payments", "income", "other"};
     std::cout << "  Categories:\n";
-    for(int i = 0; i < (int)categories.size(); ++i)
+    for (int i = 0; i < (int)categories.size(); ++i)
         std::cout << "      " << i + 1 << ".     " << categories[i] << "\n";
     std::cout << "  Select a category (1 - " << categories.size() << "):";
     int choice;
@@ -112,13 +139,16 @@ void listMenu() {
 
 int main()
 {
+    loadAll();
+    std::cout << "  Data loaded. " << transactions.size() << " transaction(s) on record.\n";
+    
     int choice = -1;
 
-    while(choice != 0) {
+    while (choice != 0) {
         listMenu();
         std::cin >> choice;
 
-        switch(choice) {
+        switch (choice) {
             case 1: addTransaction();   break;
             case 2: listTransactions(); break;
             case 3: exportReport();     break;
