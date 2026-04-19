@@ -14,11 +14,25 @@ struct Transaction {
 
 std::vector<Transaction> transactions;
 
+const std::string FILE_TRANSACTIONS = "transactions.csv";
+
 std::string currentDate() {
     std::time_t t = std::time(nullptr);
     char buf[11];
     std::strftime(buf, sizeof(buf), "%Y-%m-%d", std::localtime(&t));
     return buf;
+}
+
+void saveTransactions() {
+    std::ofstream f(FILE_TRANSACTIONS);
+    f << "date,category,description,amount\n";
+    for(const auto& t : transactions) {
+        f << t.date << ',' << t.category << ',' << t.description << ',' << t.amount << '\n';
+    }
+}
+
+void saveAll() {
+    saveTransactions();
 }
 
 void addTransaction() {
@@ -114,5 +128,6 @@ int main()
     }
 
     std::cout << "All data saved.";
+    saveAll();
     return 0;
 }
