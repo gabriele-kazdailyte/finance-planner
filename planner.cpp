@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <iomanip>
 
 struct Transaction {
     std::string date;
@@ -33,7 +34,7 @@ void addTransaction() {
     std::cin >> choice;
 
     if (choice < 1 || choice > categories.size()) {
-        std::cout << "  Invalid category selected \n" ;
+        std::cout << "  Invalid category selected. \n" ;
         return;
     }
 
@@ -44,7 +45,7 @@ void addTransaction() {
 
     std::cout << "  Enter the amount (negative = income): \n";
     if ( !(std::cin >> t.amount) ) {
-        std::cout << "  Invalid amount entered \n";
+        std::cout << "  Invalid amount entered. \n";
         return;
     }
 
@@ -52,8 +53,28 @@ void addTransaction() {
     std::cout << "  Transaction saved.\n";
 }
 
+void listTransactions() {
+        std::cout << " | ALL TRANSACTIONS | \n";
+    if (transactions.empty()) { 
+        std::cout << "  No transactions yet.\n"; 
+        return; 
+    }
+
+    std::cout << std::left
+              << std::setw(12) << "Date"
+              << std::setw(12) << "Category"
+              << std::setw(22) << "Description"
+              << std::right << std::setw(10) << "Amount" << '\n';
+    for (const auto& t : transactions) {
+        std::cout << std::left
+                  << std::setw(12) << t.date
+                  << std::setw(12) << t.category
+                  << std::setw(22) << t.description.substr(0, 21)
+                  << std::right << std::setw(10) << std::fixed << std::setprecision(2) << t.amount << '\n';
+    }
+}
+
 int main()
 {
-    addTransaction();
     return 0;
 }
