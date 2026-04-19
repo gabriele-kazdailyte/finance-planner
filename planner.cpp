@@ -74,9 +74,13 @@ void listTransactions() {
     }
 }
 
+void exportReport() {
+
+}
+
 void listMenu() {
     std::cout << "      | FINANCIAL PLANNER | \n";
-    std::cout << "\n  1. Add transaction\n";
+    std::cout << "  1. Add transaction\n";
     std::cout << "  2. List all transactions\n";
     std::cout << "  3. Export report to CSV\n";
     std::cout << "  0. Save & exit\n";
@@ -85,5 +89,21 @@ void listMenu() {
 
 int main()
 {
+    int choice = -1;
+
+    while(choice != 0) {
+        listMenu();
+        std::cin >> choice;
+
+        switch(choice) {
+            case 1: addTransaction();   break;
+            case 2: listTransactions(); break;
+            case 3: exportReport();     break;
+            case 0: choice = 0;         break;
+            default: std::cout << "  Unknown option.\n";
+        }
+    }
+
+    std::cout << "All data saved.";
     return 0;
 }
