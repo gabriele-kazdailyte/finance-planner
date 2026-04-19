@@ -74,6 +74,15 @@ void listTransactions() {
     }
 }
 
+void listMenu() {
+    std::cout << "      | FINANCIAL PLANNER | \n";
+    std::cout << "\n  1. Add transaction\n";
+    std::cout << "  2. List all transactions\n";
+    std::cout << "  3. Export report to CSV\n";
+    std::cout << "  0. Save & exit\n";
+    std::cout << "  Choice: ";
+}
+
 int main()
 {
     return 0;
