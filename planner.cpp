@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
 
 struct Transaction {
     std::string date;
@@ -10,10 +11,18 @@ struct Transaction {
 
 std::vector<Transaction> transactions;
 
+std::string currentDate() {
+    std::time_t t = std::time(nullptr);
+    char buf[11];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d", std::localtime(&t));
+    return buf;
+}
+
 void addTransaction() {
     std::cout << "| NEW TRANSACTION |\n";
 
     Transaction t;
+    t.date = currentDate();
 
     std::vector<std::string> categories = {"food", "transport", "rent", "income", "personal expenses", "loan payments", "income", "other"};
     std::cout << "  Categories:\n";
