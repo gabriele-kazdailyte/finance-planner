@@ -68,11 +68,11 @@ void addTransaction() {
     Transaction t;
     t.date = currentDate();
 
-    std::vector<std::string> categories = {"food", "transport", "rent", "income", "personal expenses", "loan payments", "income", "other"};
+    std::vector<std::string> categories = {"food", "transport", "rent", "income", "personal expenses", "loan payments", "other"};
     std::cout << "  Categories:\n";
     for (int i = 0; i < (int)categories.size(); ++i)
         std::cout << "      " << i + 1 << ".     " << categories[i] << "\n";
-    std::cout << "  Select a category (1 - " << categories.size() << "):";
+    std::cout << "  Select a category (1 - " << categories.size() << "): ";
     int choice;
     std::cin >> choice;
 
@@ -89,10 +89,12 @@ void addTransaction() {
     std::getline(std::cin, t.description);
 
     std::cout << "  Enter the amount (negative = income): ";
-    if ( !(std::cin >> t.amount) ) {
-        std::cout << "  Invalid amount entered. \n";
-        return;
-    }
+    if (!(std::cin >> t.amount)) {
+    std::cout << "  Invalid amount entered.\n";
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    return;
+}
 
     transactions.push_back(t);
     std::cout << "  Transaction saved.\n";
@@ -119,6 +121,18 @@ void listTransactions() {
     }
 }
 
+
+void showBalance() {
+    double sum = 0.0;
+    for (const auto& t : transactions){
+        sum += t.amount;
+    }
+
+    std::cout << "  Current balance: "
+              << std::fixed << std::setprecision(2)
+              << sum << "\n";
+}
+
 void exportReport() {
     std::string filename = "report_" + currentDate() + ".csv";
     std::ofstream f(filename);
@@ -133,6 +147,7 @@ void listMenu() {
     std::cout << "  1. Add transaction\n";
     std::cout << "  2. List all transactions\n";
     std::cout << "  3. Export report to CSV\n";
+    std::cout << "  4. Show balance\n";
     std::cout << "  0. Save & exit\n";
     std::cout << "  Choice: ";
 }
@@ -152,6 +167,7 @@ int main()
             case 1: addTransaction();   break;
             case 2: listTransactions(); break;
             case 3: exportReport();     break;
+            case 4: showBalance();      break;
             case 0: choice = 0;         break;
             default: std::cout << "  Unknown option.\n";
         }
