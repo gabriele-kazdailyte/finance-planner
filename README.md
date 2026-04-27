@@ -2,7 +2,7 @@
 
 ## 1. Projekto aprašymas
 
-Budget Planner – tai konsolinė C++ programa, skirta asmeninių finansų valdymui. 
+Budget Planner – tai C++ programa, skirta asmeninių finansų valdymui. 
 Vartotojas gali registruoti pajamas ir išlaidas, priskirti jas kategorijoms, 
 peržiūrėti visus įrašus, apskaičiuoti balansą bei eksportuoti duomenis į CSV failą.
 
