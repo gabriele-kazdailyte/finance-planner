@@ -1,4 +1,5 @@
 #include "BudgetManager.h"
+#include <cmath>
 
 void BudgetManager::addTransaction(const Transaction& transaction) {
     transactions.push_back(transaction);
@@ -20,4 +21,28 @@ double BudgetManager::calculateBalance() const {
 
 int BudgetManager::getTransactionCount() const {
     return transactions.size();
+}
+
+double BudgetManager::calculateIncome() const {
+    double income = 0.0;
+
+    for (const auto& t : transactions) {
+        if (t.amount > 0) {
+            income += t.amount;
+        }
+    }
+
+    return income;
+}
+
+double BudgetManager::calculateExpenses() const {
+    double expenses = 0.0;
+
+    for (const auto& t : transactions) {
+        if (t.amount < 0) {
+            expenses += std::abs(t.amount);
+        }
+    }
+
+    return expenses;
 }

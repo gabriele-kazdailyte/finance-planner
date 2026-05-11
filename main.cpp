@@ -104,6 +104,17 @@ void showBalance(const BudgetManager& manager) {
               << manager.calculateBalance() << "\n";
 }
 
+void showSummary(const BudgetManager& manager) {
+    std::cout << "  Current income: "
+              << std::fixed << std::setprecision(2)
+              << manager.calculateIncome() << "\n";
+
+    std::cout << "  Current expenses: "
+              << std::fixed << std::setprecision(2)
+              << manager.calculateExpenses() << "\n";
+
+}
+
 void exportReport(const BudgetManager& manager) {
     std::string filename = "report_" + currentDate() + ".csv";
 
@@ -118,6 +129,7 @@ void listMenu() {
     std::cout << "  2. List all transactions\n";
     std::cout << "  3. Export report to CSV\n";
     std::cout << "  4. Show balance\n";
+    std::cout << "  5. Show income and expenses\n";
     std::cout << "  0. Save & exit\n";
     std::cout << "  Choice: ";
 }
@@ -154,6 +166,9 @@ int main() {
                 break;
             case 4:
                 showBalance(manager);
+                break;
+            case 5:
+                showSummary(manager);
                 break;
             case 0:
                 choice = 0;

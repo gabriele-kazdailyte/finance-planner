@@ -13,6 +13,8 @@ public:
     const std::vector<Transaction>& getTransactions() const;
     double calculateBalance() const;
     int getTransactionCount() const;
+    double calculateIncome() const;
+    double calculateExpenses() const;
 };
 
 #endif
