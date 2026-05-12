@@ -18,21 +18,16 @@ std::string currentDate() {
     return buf;
 }
 
-void addTransaction(BudgetManager& manager) {
-    std::cout << "| NEW TRANSACTION |\n";
+
+void addTransaction(BudgetManager& manager, bool isExpense) {
+    std::cout << (isExpense ? "| NEW EXPENSE |\n" : "| NEW INCOME |\n");
 
     Transaction t;
     t.date = currentDate();
 
-    std::vector<std::string> categories = {
-        "food",
-        "transport",
-        "rent",
-        "income",
-        "personal expenses",
-        "loan payments",
-        "other"
-    };
+    std::vector<std::string> categories = isExpense
+        ? std::vector<std::string>{"food", "transport", "rent", "personal expenses", "loan payments", "other"}
+        : std::vector<std::string>{"salary", "gifts", "freelance", "other"};
 
     std::cout << "  Categories:\n";
 
@@ -44,20 +39,19 @@ void addTransaction(BudgetManager& manager) {
 
     int choice;
     std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    if (choice < 1 || choice > categories.size()) {
+    if (choice < 1 || choice > (int)categories.size()) {
         std::cout << "  Invalid category selected.\n";
         return;
     }
-
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     t.category = categories[choice - 1];
 
     std::cout << "  Enter a description: ";
     std::getline(std::cin, t.description);
 
-    std::cout << "  Enter the amount (positive = income, negative = expense): ";
+    std::cout << "  Enter the amount: ";
 
     if (!(std::cin >> t.amount)) {
         std::cout << "  Invalid amount entered.\n";
@@ -66,6 +60,8 @@ void addTransaction(BudgetManager& manager) {
         return;
     }
 
+    t.amount = isExpense ? -std::abs(t.amount) : std::abs(t.amount);
+    
     manager.addTransaction(t);
 
     std::cout << "  Transaction saved.\n";
@@ -115,6 +111,65 @@ void showSummary(const BudgetManager& manager) {
 
 }
 
+void showCategorySummary(const BudgetManager& manager) {
+    std::cout << "| CATEGORY SUMMARY |\n";
+
+    const auto totals = manager.getCategoryTotals();
+
+    if (totals.empty()) {
+        std::cout << "  No transactions yet.\n";
+        return;
+    }
+
+    std::string topExpenseCategory, topIncomeCategory;
+    double topExpense = 0, topIncome = 0;
+
+    std::cout << "\n  EXPENSES:\n";
+    for (const auto& [category, total] : totals) {
+        if (total < 0) {
+            std::cout << "    " << std::left << std::setw(22) << category
+                      << std::right << std::setw(10)
+                      << std::fixed << std::setprecision(2)
+                      << total << "\n";
+
+            if (std::abs(total) > topExpense) {
+                topExpense = std::abs(total);
+                topExpenseCategory = category;
+            }
+        }
+    }
+
+    std::cout << "\n  INCOME:\n";
+    for (const auto& [category, total] : totals) {
+        if (total > 0) {
+            std::cout << "    " << std::left << std::setw(22) << category
+                      << std::right << std::setw(10)
+                      << std::fixed << std::setprecision(2)
+                      << total << "\n";
+
+            if (total > topIncome) {
+                topIncome = total;
+                topIncomeCategory = category;
+            }
+        }
+    }
+
+    std::cout << "\n  --------------------------------\n";
+
+    if (!topExpenseCategory.empty()) {
+        std::cout << "  Most spent:   " << topExpenseCategory
+                  << " (" << std::fixed << std::setprecision(2)
+                  << topExpense << ")\n";
+    }
+
+    if (!topIncomeCategory.empty()) {
+        std::cout << "  Most earned:  " << topIncomeCategory
+                  << " (" << std::fixed << std::setprecision(2)
+                  << topIncome << ")\n";
+    }
+
+}
+
 void exportReport(const BudgetManager& manager) {
     std::string filename = "report_" + currentDate() + ".csv";
 
@@ -125,11 +180,13 @@ void exportReport(const BudgetManager& manager) {
 
 void listMenu() {
     std::cout << "      | FINANCIAL PLANNER | \n";
-    std::cout << "  1. Add transaction\n";
-    std::cout << "  2. List all transactions\n";
-    std::cout << "  3. Export report to CSV\n";
-    std::cout << "  4. Show balance\n";
-    std::cout << "  5. Show income and expenses\n";
+    std::cout << "  1. Add expense\n";
+    std::cout << "  2. Add income\n";
+    std::cout << "  3. List all transactions\n";
+    std::cout << "  4. Export report to CSV\n";
+    std::cout << "  5. Show balance\n";
+    std::cout << "  6. Show income and expenses\n";
+    std::cout << "  7. Show category summary\n";
     std::cout << "  0. Save & exit\n";
     std::cout << "  Choice: ";
 }
@@ -152,23 +209,36 @@ int main() {
 
     while (choice != 0) {
         listMenu();
-        std::cin >> choice;
+        
+        while (!(std::cin >> choice)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "  Invalid input. Enter a number: ";
+        }
+
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         switch (choice) {
             case 1:
-                addTransaction(manager);
+                addTransaction(manager, true);
                 break;
             case 2:
-                listTransactions(manager);
+                addTransaction(manager, false);
                 break;
             case 3:
-                exportReport(manager);
+                listTransactions(manager);
                 break;
             case 4:
-                showBalance(manager);
+                exportReport(manager);
                 break;
             case 5:
+                showBalance(manager);
+                break;
+            case 6:
                 showSummary(manager);
+                break;
+            case 7:
+                showCategorySummary(manager);
                 break;
             case 0:
                 choice = 0;

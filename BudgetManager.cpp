@@ -46,3 +46,14 @@ double BudgetManager::calculateExpenses() const {
 
     return expenses;
 }
+
+std::map<std::string, double> BudgetManager::getCategoryTotals() const {
+    
+    std::map<std::string, double> totals;
+
+    for (const auto& t : transactions) {
+        totals[t.category] += t.amount;
+    }
+    
+    return totals;
+}

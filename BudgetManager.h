@@ -2,6 +2,7 @@
 #define BUDGET_MANAGER_H
 
 #include <vector>
+#include<map>
 #include "Transaction.h"
 
 class BudgetManager {
@@ -15,6 +16,7 @@ public:
     int getTransactionCount() const;
     double calculateIncome() const;
     double calculateExpenses() const;
+    std::map<std::string, double> getCategoryTotals() const;
 };
 
 #endif
