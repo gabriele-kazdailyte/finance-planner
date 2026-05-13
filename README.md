@@ -171,17 +171,21 @@ finance-planner/
 ## 9. Kompiliavimas ir paleidimas:
 
 ```bash
-g++ planner.cpp -o planner
+g++ main.cpp BudgetManager.cpp FileManager.cpp -o planner
 .\planner.exe
 ```
 
 ## 10. Proof of Concept
 
-Kol kas įgyvendintas tik minimalus prototipas, leidžiantis:
+Įgyvendintas biudžeto planavimo programėlės prototipas:
 
-- įvesti finansinius duomenis
-- juos saugoti faile
-- peržiūrėti įrašus
-- apskaičiuoti balansą
+- įvesti pajamas ir išlaidas;
+- saugoti duomenis faile;
+- užkrauti duomenis iš failo;
+- peržiūrėti finansinius įrašus;
+- apskaičiuoti balansą;
+- apskaičiuoti bendras pajamas ir išlaidas;
+- eksportuoti ataskaitą;
+- išvalyti visus įrašus.
 
-Tolimesniuose etapuose planuojama plėsti funkcionalumą, struktūrą ir testavimą.
+Tolimesniuose etapuose planuojama įgyvendinti projekto front end.
