@@ -17,6 +17,7 @@ public:
     double calculateIncome() const;
     double calculateExpenses() const;
     std::map<std::string, double> getCategoryTotals() const;
+    void clearTransactions();
 };
 
 #endif

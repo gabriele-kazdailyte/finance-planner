@@ -57,3 +57,7 @@ std::map<std::string, double> BudgetManager::getCategoryTotals() const {
     
     return totals;
 }
+
+void BudgetManager::clearTransactions() {
+    transactions.clear();
+}

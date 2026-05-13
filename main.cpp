@@ -7,7 +7,6 @@
 #include "Transaction.h"
 #include "BudgetManager.h"
 #include "FileManager.h"
-#include "ReportGenerator.h"
 
 const std::string FILE_TRANSACTIONS = "transactions.csv";
 
@@ -173,9 +172,24 @@ void showCategorySummary(const BudgetManager& manager) {
 void exportReport(const BudgetManager& manager) {
     std::string filename = "report_" + currentDate() + ".csv";
 
-    ReportGenerator::exportReport(filename, manager.getTransactions());
+    FileManager::saveTransactions(filename, manager.getTransactions());
 
     std::cout << "  Report exported to: " << filename << '\n';
+}
+
+void clearAllData(BudgetManager& manager) {
+    char answer;
+
+    std::cout << "  Are you sure you want to delete all transactions? (y/n): ";
+    std::cin >> answer;
+
+    if (answer == 'y' || answer == 'Y') {
+        manager.clearTransactions();
+        FileManager::saveTransactions(FILE_TRANSACTIONS, manager.getTransactions());
+        std::cout << "  All transactions deleted.\n";
+    } else {
+        std::cout << "  Delete cancelled.\n";
+    }
 }
 
 void listMenu() {
@@ -187,6 +201,7 @@ void listMenu() {
     std::cout << "  5. Show balance\n";
     std::cout << "  6. Show income and expenses\n";
     std::cout << "  7. Show category summary\n";
+    std::cout << "  8. Clear all transactions\n";
     std::cout << "  0. Save & exit\n";
     std::cout << "  Choice: ";
 }
@@ -239,6 +254,9 @@ int main() {
                 break;
             case 7:
                 showCategorySummary(manager);
+                break;
+            case 8:
+                clearAllData(manager);
                 break;
             case 0:
                 choice = 0;
