@@ -148,7 +148,8 @@ finance-planner/
 ## Diagramos
 
 ### Architektūros schema
-<img width="378" height="290" alt="image" src="https://github.com/user-attachments/assets/d5dd3894-5b3f-4516-b6e4-d350c5bad21d" />
+<img width="341" height="263" alt="image" src="https://github.com/user-attachments/assets/6ca92634-fedd-439c-8b06-14ae2b1119b0" />
+
 
 ---
 
@@ -161,10 +162,12 @@ finance-planner/
 ### Activity diagrama
 <img width="839" height="319" alt="image" src="https://github.com/user-attachments/assets/d903b1df-9a9e-4105-9294-e1348cf5d1f8" />
 
+
 ---
 
 ### Klasių diagrama
 <img width="688" height="447" alt="image" src="https://github.com/user-attachments/assets/2c0f545f-8e48-4dad-a49f-0ec8ff19a2d9" />
+
 
 ---
 
