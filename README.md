@@ -15,12 +15,17 @@ sistemos logikos demonstravimui.
 
 Šiuo metu įgyvendintos funkcijos:
 
-- Naujos transakcijos pridėjimas
+- Pajamų pridėjimas
+- Išlaidų pridėjimas
 - Visų transakcijų peržiūra
 - Balanso skaičiavimas
+- Pajamų sumos skaičiavimas
+- Išlaidų sumos skaičiavimas
+- Finansinės suvestinės rodymas
 - Duomenų išsaugojimas į CSV failą
 - Duomenų užkrovimas iš CSV failo
 - Ataskaitos eksportas į CSV failą
+- Visų transakcijų išvalymas
 
 ---
 
@@ -41,16 +46,29 @@ sistemos logikos demonstravimui.
 - Visos transakcijos saugomos `std::vector<Transaction>` konteineryje
 
 ### 3.3. Failų valdymas
-- Duomenys saugomi CSV faile (`transactions.csv`)
-- Pagrindinės funkcijos:
-  - `loadTransactions()` – duomenų nuskaitymas
-  - `saveTransactions()` – duomenų išsaugojimas
 
-### 3.4. Programos logika
-- `addTransaction()` – naujos transakcijos pridėjimas
-- `listTransactions()` – visų transakcijų rodymas
-- `showBalance()` – balanso skaičiavimas
-- `exportReport()` – ataskaitos eksportas
+Failų valdymo logika realizuota `FileManager` klasėje.
+
+Ši klasė atsakinga už:
+
+- transakcijų nuskaitymą iš CSV failo;
+- transakcijų išsaugojimą į CSV failą;
+- ataskaitos eksportavimą į CSV failą.
+
+
+### 3.4. Finansų valdymo logika
+
+Finansų valdymo logika realizuota `BudgetManager` klasėje.
+
+Ši klasė atsakinga už:
+
+- transakcijų saugojimą;
+- naujų transakcijų pridėjimą;
+- balanso skaičiavimą;
+- pajamų skaičiavimą;
+- išlaidų skaičiavimą;
+- transakcijų išvalymą;
+- duomenų pateikimą kitoms programos dalims.
 
 ---
 
@@ -70,11 +88,14 @@ sistemos logikos demonstravimui.
 
 Vartotojas gali:
 
-- pridėti transakciją
-- peržiūrėti visas transakcijas
-- peržiūrėti balansą
-- eksportuoti ataskaitą
-- išeiti iš programos išsaugant duomenis
+- pridėti pajamas;
+- pridėti išlaidas;
+- peržiūrėti visas transakcijas;
+- peržiūrėti balansą;
+- peržiūrėti finansinę suvestinę;
+- eksportuoti ataskaitą;
+- išvalyti visas transakcijas;
+- išeiti iš programos išsaugant duomenis.
 
 ---
 
@@ -97,9 +118,11 @@ Vartotojas gali:
   - iostream
   - vector
   - fstream
+  - sstream
   - ctime
   - iomanip
   - limits
+  - string
 - Duomenų saugojimas: CSV failai
 - Aplinka: Visual Studio Code
 - Versijavimas: Git
@@ -109,11 +132,17 @@ Vartotojas gali:
 
 ## 8. Projekto struktūra (failai)
 
+```txt
 finance-planner/
-- planner.cpp
-- README.md
-- transactions.csv  ← sukuriamas automatiškai
-
+├── main.cpp
+├── Transaction.h
+├── BudgetManager.h
+├── BudgetManager.cpp
+├── FileManager.h
+├── FileManager.cpp
+├── README.md
+├── transactions.csv
+└── report_YYYY-MM-DD.csv
 
 ## Diagramos
 
