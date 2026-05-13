@@ -143,6 +143,7 @@ finance-planner/
 ├── README.md
 ├── transactions.csv
 └── report_YYYY-MM-DD.csv
+```
 
 ## Diagramos
 
