@@ -3,10 +3,22 @@
 #include <ctime>
 #include <iomanip>
 #include <limits>
+#include <sstream>
 
 #include "Transaction.h"
 #include "BudgetManager.h"
 #include "FileManager.h"
+
+#define RESET       "\033[0m"
+#define BOLD        "\033[1m"
+#define DIM         "\033[2m"
+#define GREEN       "\033[32m"
+#define RED         "\033[31m"
+#define YELLOW      "\033[33m"
+#define BLUE        "\033[34m"
+#define CYAN        "\033[36m"
+#define WHITE       "\033[97m"
+#define BG_DARK     "\033[48;5;234m"
 
 const std::string FILE_TRANSACTIONS = "transactions.csv";
 
@@ -17,9 +29,33 @@ std::string currentDate() {
     return buf;
 }
 
+void printLine(const std::string& color = DIM, char c = '-', int len = 50) {
+    std::cout << color << std::string(len, c) << RESET << "\n";
+}
+
+void printHeader(const std::string& title) {
+    std::cout << "\n" << BLUE << BOLD;
+    std::cout << "  ╔══════════════════════════════════════════════╗\n";
+    std::cout << "  ║  " << WHITE << std::left << std::setw(44) << title << BLUE << "║\n";
+    std::cout << "  ╚══════════════════════════════════════════════╝\n";
+    std::cout << RESET;
+}
+
+void printSuccess(const std::string& msg) {
+    std::cout << GREEN << "  ✔  " << msg << RESET << "\n";
+}
+
+void printError(const std::string& msg) {
+    std::cout << RED << "  ✖  " << msg << RESET << "\n";
+}
+
+void printWarning(const std::string& msg) {
+    std::cout << YELLOW << "  ⚠  " << msg << RESET << "\n";
+}
+
 
 void addTransaction(BudgetManager& manager, bool isExpense) {
-    std::cout << (isExpense ? "| NEW EXPENSE |\n" : "| NEW INCOME |\n");
+    printHeader(isExpense ? "NEW EXPENSE" : "NEW INCOME");
 
     Transaction t;
     t.date = currentDate();
@@ -28,11 +64,10 @@ void addTransaction(BudgetManager& manager, bool isExpense) {
         ? std::vector<std::string>{"food", "transport", "rent", "personal expenses", "loan payments", "other"}
         : std::vector<std::string>{"salary", "gifts", "freelance", "other"};
 
-    std::cout << "  Categories:\n";
+    std::cout << "\n" << DIM << "  Categories:\n" << RESET;
 
-    for (int i = 0; i < (int)categories.size(); ++i) {
-        std::cout << "      " << i + 1 << ".     " << categories[i] << "\n";
-    }
+    for (int i = 0; i < (int)categories.size(); ++i)
+        std::cout << "    " << CYAN << BOLD << (i+1) << RESET << "  " << WHITE << categories[i] << "\n" << RESET;
 
     std::cout << "  Select a category (1 - " << categories.size() << "): ";
 
@@ -41,7 +76,7 @@ void addTransaction(BudgetManager& manager, bool isExpense) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (choice < 1 || choice > (int)categories.size()) {
-        std::cout << "  Invalid category selected.\n";
+        printError("Invalid category selected.");
         return;
     }
 
@@ -53,7 +88,7 @@ void addTransaction(BudgetManager& manager, bool isExpense) {
     std::cout << "  Enter the amount: ";
 
     if (!(std::cin >> t.amount)) {
-        std::cout << "  Invalid amount entered.\n";
+        printError("Invalid amount entered.");
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return;
@@ -63,11 +98,11 @@ void addTransaction(BudgetManager& manager, bool isExpense) {
     
     manager.addTransaction(t);
 
-    std::cout << "  Transaction saved.\n";
+    printSuccess("Transaction saved.");
 }
 
 void listTransactions(const BudgetManager& manager) {
-    std::cout << " | ALL TRANSACTIONS | \n";
+    printHeader("ALL TRANSACTIONS");
 
     const auto& transactions = manager.getTransactions();
 
@@ -76,60 +111,76 @@ void listTransactions(const BudgetManager& manager) {
         return;
     }
 
-    std::cout << std::left
-              << std::setw(12) << "Date"
-              << std::setw(20) << "Category"
-              << std::setw(22) << "Description"
-              << std::right << std::setw(10) << "Amount" << '\n';
+    std::cout << "\n" << DIM << "  " << std::left
+          << std::setw(12) << "Date"
+          << std::setw(20) << "Category"
+          << std::setw(22) << "Description"
+          << std::right << std::setw(10) << "Amount"
+          << "\n" << RESET;
+    printLine(DIM, '-', 66);
 
     for (const auto& t : transactions) {
-        std::cout << std::left
-                  << std::setw(12) << t.date
-                  << std::setw(20) << t.category
-                  << std::setw(22) << t.description.substr(0, 21)
-                  << std::right << std::setw(10)
-                  << std::fixed << std::setprecision(2)
-                  << t.amount << '\n';
+        std::string amtColor = (t.amount >= 0) ? GREEN : RED;
+        std::string sign     = (t.amount >= 0) ? "+" : "";
+
+        std::ostringstream amtStream;
+        amtStream << sign << std::fixed << std::setprecision(2) << t.amount;
+        std::string amtStr = amtStream.str();
+
+        std::cout << "  ";
+        std::cout << std::left << std::setw(14) << t.date;
+        std::cout << std::left << std::setw(20) << t.category;
+        std::cout << std::left << std::setw(24) << t.description.substr(0, 23);
+        std::cout << amtColor << BOLD << std::right << std::setw(10) << amtStr << RESET << "\n";
     }
 }
 
 void showBalance(const BudgetManager& manager) {
-    std::cout << "  Current balance: "
-              << std::fixed << std::setprecision(2)
-              << manager.calculateBalance() << "\n";
+    printHeader("BALANCE");
+
+    double balance = manager.calculateBalance();
+    std::string balColor = (balance >= 0) ? GREEN : RED;
+    std::string balSign  = (balance >= 0) ? "+" : "";
+
+    std::cout << "\n  " << balColor << BOLD
+              << balSign << std::fixed << std::setprecision(2) << balance
+              << " EUR" << RESET << "\n\n";
 }
 
 void showSummary(const BudgetManager& manager) {
-    std::cout << "  Current income: "
-              << std::fixed << std::setprecision(2)
-              << manager.calculateIncome() << "\n";
+    printHeader("INCOME & EXPENSES");
 
-    std::cout << "  Current expenses: "
-              << std::fixed << std::setprecision(2)
-              << manager.calculateExpenses() << "\n";
+    std::cout << "\n  " << DIM << "Income:   " << RESET
+              << GREEN << BOLD << "+" << std::fixed << std::setprecision(2)
+              << manager.calculateIncome() << " EUR" << RESET << "\n";
 
+    std::cout << "  " << DIM << "Expenses: " << RESET
+              << RED << BOLD << "-" << std::fixed << std::setprecision(2)
+              << manager.calculateExpenses() << " EUR" << RESET << "\n\n";
 }
 
 void showCategorySummary(const BudgetManager& manager) {
-    std::cout << "| CATEGORY SUMMARY |\n";
+    printHeader("CATEGORY SUMMARY");
 
     const auto totals = manager.getCategoryTotals();
 
     if (totals.empty()) {
-        std::cout << "  No transactions yet.\n";
+        printWarning("No transactions yet.");
         return;
     }
 
     std::string topExpenseCategory, topIncomeCategory;
     double topExpense = 0, topIncome = 0;
 
-    std::cout << "\n  EXPENSES:\n";
+    std::cout << "\n  " << RED << BOLD << "EXPENSES:\n" << RESET;
     for (const auto& [category, total] : totals) {
         if (total < 0) {
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(2) << total;
+            std::string totalStr = oss.str();
+
             std::cout << "    " << std::left << std::setw(22) << category
-                      << std::right << std::setw(10)
-                      << std::fixed << std::setprecision(2)
-                      << total << "\n";
+                      << RED << std::right << std::setw(10) << totalStr << RESET << "\n";
 
             if (std::abs(total) > topExpense) {
                 topExpense = std::abs(total);
@@ -138,13 +189,15 @@ void showCategorySummary(const BudgetManager& manager) {
         }
     }
 
-    std::cout << "\n  INCOME:\n";
+    std::cout << "\n  " << GREEN << BOLD << "INCOME:\n" << RESET;
     for (const auto& [category, total] : totals) {
         if (total > 0) {
+            std::ostringstream oss;
+            oss << "+" << std::fixed << std::setprecision(2) << total;
+            std::string totalStr = oss.str();
+
             std::cout << "    " << std::left << std::setw(22) << category
-                      << std::right << std::setw(10)
-                      << std::fixed << std::setprecision(2)
-                      << total << "\n";
+                      << GREEN << std::right << std::setw(10) << totalStr << RESET << "\n";
 
             if (total > topIncome) {
                 topIncome = total;
@@ -153,20 +206,21 @@ void showCategorySummary(const BudgetManager& manager) {
         }
     }
 
-    std::cout << "\n  --------------------------------\n";
+    std::cout << "\n  " << DIM << std::string(34, '-') << RESET << "\n";
 
     if (!topExpenseCategory.empty()) {
-        std::cout << "  Most spent:   " << topExpenseCategory
-                  << " (" << std::fixed << std::setprecision(2)
-                  << topExpense << ")\n";
+        std::cout << "  " << CYAN << BOLD << "Most spent:   " << RESET
+                  << CYAN << topExpenseCategory
+                  << "  (" << std::fixed << std::setprecision(2) << topExpense << ")"
+                  << RESET << "\n";
     }
 
     if (!topIncomeCategory.empty()) {
-        std::cout << "  Most earned:  " << topIncomeCategory
-                  << " (" << std::fixed << std::setprecision(2)
-                  << topIncome << ")\n";
+        std::cout << "  " << CYAN << BOLD << "Most earned:  " << RESET
+                  << CYAN << topIncomeCategory
+                  << "  (+" << std::fixed << std::setprecision(2) << topIncome << ")"
+                  << RESET << "\n\n";
     }
-
 }
 
 void exportReport(const BudgetManager& manager) {
@@ -193,20 +247,40 @@ void clearAllData(BudgetManager& manager) {
 }
 
 void listMenu() {
-    std::cout << "      | FINANCIAL PLANNER | \n";
-    std::cout << "  1. Add expense\n";
-    std::cout << "  2. Add income\n";
-    std::cout << "  3. List all transactions\n";
-    std::cout << "  4. Export report to CSV\n";
-    std::cout << "  5. Show balance\n";
-    std::cout << "  6. Show income and expenses\n";
-    std::cout << "  7. Show category summary\n";
-    std::cout << "  8. Clear all transactions\n";
-    std::cout << "  0. Save & exit\n";
-    std::cout << "  Choice: ";
+ 
+    std::cout << "\n" << BLUE << BOLD;
+    std::cout << "  ╔══════════════════════════════════════════════╗\n";
+    std::cout << "  ║          💰  FINANCIAL PLANNER  💰           ║\n";
+    std::cout << "  ╠══════════════════════════════════════════════╣\n" << RESET;
+ 
+    auto item = [](const std::string& num, const std::string& label) {
+        std::cout << BLUE << BOLD << "  ║  " << RESET
+                  << CYAN << BOLD << num << RESET
+                  << "  " << WHITE << std::left << std::setw(38) << label
+                  << BLUE << BOLD << "   ║\n" << RESET;
+    };
+ 
+    item("1", "Add expense");
+    item("2", "Add income");
+    item("3", "List all transactions");
+    item("4", "Export report to CSV");
+    item("5", "Show balance");
+    item("6", "Income & expenses");
+    item("7", "Category summary");
+    item("8", "Clear all transactions");
+ 
+    std::cout << BLUE << BOLD << "  ╠══════════════════════════════════════════════╣\n" << RESET;
+    item("0", "Save & exit");
+    std::cout << BLUE << BOLD << "  ╚══════════════════════════════════════════════╝\n" << RESET;
+ 
+    std::cout << "\n  " << CYAN << "❯ " << RESET;
 }
 
 int main() {
+    #ifdef _WIN32
+    system("chcp 65001 > nul");
+    #endif
+
     BudgetManager manager;
 
     std::vector<Transaction> loadedTransactions =
@@ -228,7 +302,7 @@ int main() {
         while (!(std::cin >> choice)) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "  Invalid input. Enter a number: ";
+            printError("Invalid input. Enter a number:");
         }
 
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -262,13 +336,13 @@ int main() {
                 choice = 0;
                 break;
             default:
-                std::cout << "  Unknown option.\n";
+                printError("Unknown option.");
         }
     }
 
     FileManager::saveTransactions(FILE_TRANSACTIONS, manager.getTransactions());
 
-    std::cout << "All data saved.";
+    printSuccess("All data saved.");
 
     return 0;
 }
