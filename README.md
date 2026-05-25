@@ -191,4 +191,22 @@ g++ main.cpp BudgetManager.cpp FileManager.cpp -o planner
 - eksportuoti ataskaitą;
 - išvalyti visus įrašus.
 
-Tolimesniuose etapuose planuojama įgyvendinti projekto front end.
+## UI
+
+Programą nusprendėme palikti terminalo lygyje.
+
+Pakeitėme dizainą, kad vartotojas matytų estetiškesnį terminalo vaizdą ir būtų patogiau naudotis programos funkcijomis.
+
+## Darbų pasiskirstymas ir atlikimo trukmė
+
+Darbus dalinomės po lygiai:
+
+Gabrielė Každailytė: 50%
+Rugilė Kazakevičiūtė: 50%
+
+Trukmė etapuose:
+P1: ~5h
+P2: ~6h
+P3: ~1h
+
+Bendra darbo atlikimo trukmė: ~12h
